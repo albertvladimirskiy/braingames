@@ -1,5 +1,5 @@
 // Ballpark view: ask → feedback loop. A 25s soft timer only affects the speed bonus (never cuts you off).
-import { h } from '../../core/ui.js';
+import { h, fill } from '../../core/ui.js';
 import { createEmitter } from '../../core/events.js';
 import { createLoop } from '../../core/loop.js';
 import { createHud } from '../hud.js';
@@ -90,7 +90,7 @@ export function createBallpark(ctx) {
     juice.scorePop(stage, `+${sc.points}`, { kind: good ? 'good' : 'bad' });
     askEl.hidden = true;
     fbEl.hidden = false;
-    fbEl.replaceChildren(
+    fill(fbEl,
       h('div', { class: `feedback ${good ? 'good' : 'bad'}` }, `${good ? '✓' : '✗'} ${describeMiss(sc)}`),
       h('div', { class: 'kv' }, h('span', null, 'Your estimate'), h('strong', { class: 'tabular' }, formatValue(estimate))),
       h('div', { class: 'kv' }, h('span', null, 'True value'), h('strong', { class: 'tabular' }, `${formatValue(q.truth)}${q.unit ? ` ${q.unit}` : ''}`)),

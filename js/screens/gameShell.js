@@ -120,7 +120,7 @@ export function mountGame(outlet, opts) {
     state = 'countdown';
     let shown = 3;
     const num = h('div', { class: 'countdown-num', 'aria-hidden': 'true' }, '3');
-    const ov = h('div', { class: 'overlay', role: 'status' }, h('p', { class: 'muted' }, 'Get ready'), num);
+    const ov = h('div', { class: 'overlay opaque', role: 'status' }, h('p', { class: 'muted' }, 'Get ready'), num);
     root.append(ov);
     announce('3');
     services.audio.play('tick');

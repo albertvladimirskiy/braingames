@@ -33,6 +33,12 @@ export function svg(tag, attrs, ...children) {
   return append(el, children);
 }
 
+/** Replace el's children with `children` (null/false skipped, strings become text), unlike raw replaceChildren. */
+export function fill(el, ...children) {
+  el.replaceChildren();
+  return append(el, children);
+}
+
 export const clear = (el) => {
   el.replaceChildren();
   return el;

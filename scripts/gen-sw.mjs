@@ -28,7 +28,22 @@ export function renderBlock({ files, build }) {
   return `/* GENERATED:START */\nconst BUILD = '${build}';\nconst PRECACHE = ${JSON.stringify(files, null, 2)};\n/* GENERATED:END */`;
 }
 
+/** The product name lives in js/config.js; mirror it into the static files that cannot import it. */
+export function syncName() {
+  const name = readFileSync(join(root, 'js/config.js'), 'utf8').match(/APP_NAME = '([^']+)'/)[1];
+  const manPath = join(root, 'manifest.webmanifest');
+  const man = JSON.parse(readFileSync(manPath, 'utf8'));
+  man.name = name;
+  man.short_name = name;
+  writeFileSync(manPath, `${JSON.stringify(man, null, 2)}
+`);
+  const htmlPath = join(root, 'index.html');
+  writeFileSync(htmlPath, readFileSync(htmlPath, 'utf8').replace(/<title>[^<]*<\/title>/, `<title>${name}</title>`));
+  return name;
+}
+
 if (process.argv[1]?.endsWith('gen-sw.mjs')) {
+  syncName();
   const swPath = join(root, 'sw.js');
   const src = readFileSync(swPath, 'utf8');
   const next = src.replace(/\/\* GENERATED:START \*\/[\s\S]*?\/\* GENERATED:END \*\//, renderBlock(computePrecache()));

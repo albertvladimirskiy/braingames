@@ -1,5 +1,5 @@
 // How Sure Are You? view: statement → True/False → confidence → feedback.
-import { h } from '../../core/ui.js';
+import { h, fill } from '../../core/ui.js';
 import { createEmitter } from '../../core/events.js';
 import { createLoop } from '../../core/loop.js';
 import { createHud } from '../hud.js';
@@ -117,7 +117,7 @@ export function createSure(ctx) {
         juice.flash(flashLayer);
       }
     }
-    fbPanel.replaceChildren(
+    fill(fbPanel,
       h('div', { class: `feedback ${sc.correct ? 'good' : 'bad'}` }, verdict),
       h('p', null, h('strong', null, `The statement is ${q.answer ? 'TRUE' : 'FALSE'}. `), q.explanation),
       !sc.correct && !sc.timedOut && sc.confidence >= 80 && h('p', { class: 'muted' }, 'Overconfidence is expensive by design: one confident miss wipes out several good answers.'),

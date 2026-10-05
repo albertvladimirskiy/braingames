@@ -27,6 +27,10 @@ addEventListener('keydown', () => audio.unlock(), { once: true, passive: true })
 
 const outlet = document.getElementById('main');
 const nav = document.getElementById('nav');
+document.getElementById('skip-link').addEventListener('click', (e) => {
+  e.preventDefault(); // a hash link would be read as a route
+  outlet.focus();
+});
 const NAV = [['home', 'Home'], ['daily', 'Daily'], ['stats', 'Stats'], ['settings', 'Settings']];
 
 function renderNav(route) {
@@ -46,7 +50,14 @@ const routes = {
   settings: (el) => renderSettings(el, services),
 };
 
-startRouter({ routes, outlet, onRoute: (route) => { renderNav(route); document.title = APP_NAME; } });
+startRouter({
+  routes, outlet,
+  onRoute: (route) => {
+    renderNav(route);
+    document.title = APP_NAME;
+    if (route.name !== 'play') outlet.focus({ preventScroll: true }); // announce the new screen to assistive tech
+  },
+});
 
 if (DEBUG) {
   window.__reps = {

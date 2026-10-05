@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import vm from 'node:vm';
 import { computePrecache } from '../scripts/gen-sw.mjs';
-import { VERSION } from '../js/config.js';
+import { VERSION, APP_NAME } from '../js/config.js';
 
 const swSrc = readFileSync(resolve(import.meta.dirname, '..', 'sw.js'), 'utf8');
 
@@ -93,4 +93,12 @@ test('non-GET and cross-origin requests are not intercepted', async () => {
   await run('install', {});
   assert.equal(await run('fetch', { request: { method: 'POST', url: 'https://x.test/app/a' } }), undefined);
   assert.equal(await run('fetch', { request: { method: 'GET', url: 'https://other.test/a' } }), undefined);
+});
+
+test('manifest name and page title mirror APP_NAME from config (run `npm run gen` if this fails)', () => {
+  const root = resolve(import.meta.dirname, '..');
+  const man = JSON.parse(readFileSync(resolve(root, 'manifest.webmanifest'), 'utf8'));
+  assert.equal(man.name, APP_NAME);
+  assert.equal(man.short_name, APP_NAME);
+  assert.match(readFileSync(resolve(root, 'index.html'), 'utf8'), new RegExp(`<title>${APP_NAME}</title>`));
 });

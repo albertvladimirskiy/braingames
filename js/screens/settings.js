@@ -60,7 +60,7 @@ export function renderSettings(outlet, services) {
               applySettings(storage.get().settings, services);
               toast('Data imported.', { title: 'Import' });
             } catch (err) {
-              toast(`That is not a valid backup (${err.message}).`, { title: 'Import failed' });
+              toast(err.message.startsWith('Save is from a newer') ? err.message : 'That text is not a valid backup export.', { title: 'Import failed' });
             }
           },
         }, 'Import from box'),

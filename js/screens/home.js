@@ -66,7 +66,7 @@ export function renderHome(outlet, services) {
     const inCat = games.filter((g) => g.category === cat);
     if (!inCat.length) return null;
     return h('section', { 'data-cat': cat },
-      h('h2', { class: 'cat-title chip-dot' }, h('span', { class: 'chip chip-dot' }, meta.label)),
+      h('h2', { class: 'cat-title' }, h('span', { class: 'chip chip-dot' }, meta.label)),
       h('div', { class: 'stack-sm' }, inCat.map((g) => {
         const best = st.bests[g.id];
         const tier = gameTier(st, g);

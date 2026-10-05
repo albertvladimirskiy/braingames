@@ -106,6 +106,7 @@ a.card:hover { background: var(--surface-2); }
   text-align: center;
 }
 .overlay .btn { min-width: 220px; }
+.overlay.opaque { background: var(--bg); }
 .countdown-num { font-size: var(--fs-8); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; }
 
 #toasts {

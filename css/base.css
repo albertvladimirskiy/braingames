@@ -78,3 +78,16 @@ body.in-game .app { padding-bottom: var(--space-4); }
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
 }
+
+.skip-link {
+  position: absolute;
+  left: var(--space-3);
+  top: -100px;
+  z-index: 100;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-3);
+  color: var(--text);
+  border-radius: var(--radius-1);
+}
+.skip-link:focus { top: var(--space-3); }
+#main:focus { outline: none; }
