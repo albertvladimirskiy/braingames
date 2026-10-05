@@ -4,12 +4,16 @@ import dummy from './dummy/index.js';
 import quickmath from './quickmath/index.js';
 import ballpark from './ballpark/index.js';
 import sure from './sure/index.js';
+import wordbank from './wordbank/index.js';
+import stroop from './stroop/index.js';
 
 export const games = [
   // real games are listed here (one line each)
   quickmath,
   ballpark,
   sure,
+  wordbank,
+  stroop,
   ...(DEBUG ? [dummy] : []),
 ];
 
