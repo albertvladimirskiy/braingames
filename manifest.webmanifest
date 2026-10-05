@@ -1,0 +1,15 @@
+{
+  "name": "Reps",
+  "short_name": "Reps",
+  "description": "Short mental-skill games: mental math, estimation, calibration, vocabulary and attention.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0e13",
+  "theme_color": "#0d0e13",
+  "icons": [
+    { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

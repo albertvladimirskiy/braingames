@@ -1,0 +1,92 @@
+/* Design tokens. Dark-first; light theme overrides via [data-theme="light"].
+   Accent colors are used for fills/borders only, never as text (contrast). */
+:root {
+  color-scheme: dark;
+
+  --bg: #0d0e13;
+  --surface: #171923;
+  --surface-2: #212434;
+  --surface-3: #2c3044;
+  --text: #f3f4f8;
+  --text-muted: #aab0c4;
+  --border: #343950;
+  --good: #46d39a;
+  --bad: #ff6b6b;
+  --warn: #ffc857;
+  --focus: #9ec5ff;
+  --overlay: rgb(8 9 13 / 0.86);
+  --shadow: 0 8px 28px rgb(0 0 0 / 0.45);
+
+  --quant: #7f77dd;
+  --language: #1d9e75;
+  --reasoning: #ef9f27;
+  --reflex: #d85a30;
+  --on-quant: #0d0e13;
+  --on-language: #0d0e13;
+  --on-reasoning: #0d0e13;
+  --on-reflex: #ffffff;
+  --accent: var(--quant);
+  --on-accent: var(--on-quant);
+
+  --ink-red: #ff5c5c;
+  --ink-blue: #4da3ff;
+  --ink-green: #3ccf8e;
+  --ink-yellow: #ffd23f;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius-1: 8px;
+  --radius-2: 14px;
+  --radius-3: 22px;
+  --radius-pill: 999px;
+
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --fs-1: 0.8125rem;
+  --fs-2: 0.9375rem;
+  --fs-3: 1.0625rem;
+  --fs-4: 1.25rem;
+  --fs-5: 1.75rem;
+  --fs-6: 2.5rem;
+  --fs-7: 3.5rem;
+  --fs-8: 4.5rem;
+  --fw-bold: 700;
+  --fw-heavy: 800;
+
+  --touch: 48px;
+  --content-w: 480px;
+  --border-w: 2px;
+
+  --dur-1: 120ms;
+  --dur-2: 240ms;
+  --dur-3: 480ms;
+  --dur-4: 900ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f5fa;
+  --surface: #ffffff;
+  --surface-2: #eceef6;
+  --surface-3: #dfe2ef;
+  --text: #14151c;
+  --text-muted: #4f566b;
+  --border: #c5c9dc;
+  --good: #0b7a50;
+  --bad: #c42727;
+  --warn: #7a5200;
+  --focus: #1d4ed8;
+  --overlay: rgb(244 245 250 / 0.9);
+  --shadow: 0 8px 24px rgb(20 21 28 / 0.14);
+}
+
+[data-cat='quant'] { --accent: var(--quant); --on-accent: var(--on-quant); }
+[data-cat='language'] { --accent: var(--language); --on-accent: var(--on-language); }
+[data-cat='reasoning'] { --accent: var(--reasoning); --on-accent: var(--on-reasoning); }
+[data-cat='reflex'] { --accent: var(--reflex); --on-accent: var(--on-reflex); }
