@@ -8,6 +8,7 @@ import { haptics } from './core/haptics.js';
 import { juice } from './core/juice.js';
 import * as rating from './core/rating.js';
 import * as clock from './core/clock.js';
+import { createSync } from './core/sync.js';
 import { games } from './games/registry.js';
 import { mountGame } from './screens/gameShell.js';
 import { renderHome } from './screens/home.js';
@@ -16,7 +17,9 @@ import { renderDaily } from './screens/daily.js';
 import { renderStats } from './screens/stats.js';
 
 const storage = createStorage();
-const services = { storage, rating, audio, haptics, juice, clock };
+const sync = createSync({ storage });
+const services = { storage, rating, audio, haptics, juice, clock, sync };
+sync.loadCachedBenchmarks(); // same cutoffs offline as at the last online session
 applySettings(storage.get().settings, services);
 for (const q of ['(prefers-color-scheme: light)', '(prefers-reduced-motion: reduce)']) {
   matchMedia(q).addEventListener('change', () => applySettings(storage.get().settings, services));
@@ -62,6 +65,12 @@ startRouter({
     firstRoute = false;
   },
 });
+
+// Optional server link: quietly reconcile in the background (never blocks play)
+if (sync.connected()) {
+  sync.syncNow();
+  sync.refreshBenchmarks();
+}
 
 if (DEBUG) {
   window.__reps = {

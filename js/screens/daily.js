@@ -3,6 +3,7 @@ import { h, toast } from '../core/ui.js';
 import { mountGame } from './gameShell.js';
 import { mountResetCountdown } from './countdown.js';
 import { shareDailyImage } from './shareImage.js';
+import { leaderboardCard } from './leaderboard.js';
 import { getGame } from '../games/registry.js';
 import { now } from '../core/clock.js';
 import { navigate } from '../core/router.js';
@@ -31,7 +32,7 @@ export function renderDaily(outlet, services) {
   outlet.append(view, gameHost);
   let gameCleanup = null;
   let countdownCleanup = null;
-  let run = null; // { practice, scores }
+  let run = null; // { practice, scores, logs }
 
   const stopGame = () => {
     gameCleanup?.();
@@ -79,7 +80,8 @@ export function renderDaily(outlet, services) {
 
   function start(practice) {
     const prior = storage.get().daily;
-    run = { practice, scores: practice ? {} : { ...(prior.progress?.date === today ? prior.progress.scores : {}) } };
+    const resume = !practice && prior.progress?.date === today ? prior.progress : null;
+    run = { practice, scores: { ...(resume?.scores ?? {}) }, logs: { ...(resume?.logs ?? {}) } };
     nextSegment();
   }
 
@@ -100,7 +102,8 @@ export function renderDaily(outlet, services) {
       },
       onFinish: (result) => {
         run.scores[seg.gameId] = normalizeSegment(seg.gameId, result.score);
-        if (!run.practice) storage.update((s) => (s.daily.progress = { date: today, scores: { ...run.scores } }));
+        run.logs[seg.gameId] = result.stats.log;
+        if (!run.practice) storage.update((s) => (s.daily.progress = { date: today, scores: { ...run.scores }, logs: { ...run.logs } }));
         stopGame();
         interstitial(idx, result);
       },
@@ -126,7 +129,7 @@ export function renderDaily(outlet, services) {
     let info = { counted: false, streak: 0, earnedFreeze: false, frozen: 0, total: 0 };
     if (!run.practice) {
       storage.update((s) => {
-        const r = recordDaily(s.daily, today, run.scores);
+        const r = recordDaily(s.daily, today, run.scores, services.sync.connected() ? { logs: run.logs, submitted: false } : {});
         s.daily = r.daily;
         info = r;
         for (const a of runAchievements(s, null, now())) toast(a.desc, { title: `Unlocked: ${a.name}` });
@@ -159,6 +162,7 @@ export function renderDaily(outlet, services) {
         info?.earnedFreeze && h('p', { class: 'strong' }, 'You earned a streak freeze!'),
       ),
       h('pre', { class: 'share-text', 'aria-label': 'Shareable result' }, text),
+      !practice && services.sync.connected() && leaderboardCard({ services, date: today }),
       copyBtn,
       h('button', { class: 'btn btn-big', type: 'button', id: 'daily-image', onClick: () => shareDailyImage({ date: today, scores, total, streak }) }, 'Share as image'),
       h('button', { class: 'btn', type: 'button', onClick: () => start(true) }, 'Practice again (does not count)'),

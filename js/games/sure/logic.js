@@ -1,6 +1,7 @@
 // How Sure Are You?: question selection and per-question / per-session scoring. Pure.
 import { brier, brierPoints, meanBrier } from '../../core/calibration.js';
 import { clamp } from '../../core/scoring.js';
+import { TF_QUESTIONS } from '../../../data/tf-questions.js';
 
 export const FREE_QUESTIONS = 10;
 export const DAILY_QUESTIONS = 6;
@@ -25,6 +26,9 @@ export function pickQuestions(rng, bank, n, exclude = []) {
   const nTrue = Math.floor(n / 2) + (n % 2 ? (extraTrue ? 1 : 0) : 0);
   return rng.shuffle([...take(true, nTrue), ...take(false, n - nTrue)]);
 }
+
+/** The question set for a run: shared by the view and by server-side Daily verification. */
+export const buildSet = (rng, count, exclude = []) => pickQuestions(rng, TF_QUESTIONS, count, exclude);
 
 /** Score one answered question. `confidence` is an integer percent 50–99 for the chosen answer. */
 export function scoreQuestion({ chosen, truth, confidence }) {

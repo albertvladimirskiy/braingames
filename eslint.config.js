@@ -15,7 +15,7 @@ export default [
   },
   {
     // e2e files contain functions that run inside the page, so they also see browser globals
-    files: ['e2e/**/*.js'],
+    files: ['e2e/**/*.js', 'scripts/perf-audit.mjs'],
     languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.node, ...globals.browser } },
     rules: { 'no-unused-vars': ['warn', { argsIgnorePattern: '^_', ignoreRestSiblings: true }] },
   },

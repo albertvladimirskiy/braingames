@@ -1,7 +1,7 @@
 // Results screen: score, grade, deltas vs last/PB/7-day "ghost", next goal, rating changes, XP, extras, Again.
 import { h } from '../core/ui.js';
-import { SKILLS, PLACEHOLDER_NOTE } from '../config.js';
-import { ratingTier, TIERS } from '../core/benchmarks.js';
+import { SKILLS } from '../config.js';
+import { ratingTier, TIERS, benchmarkNote } from '../core/benchmarks.js';
 import { formatInt, formatSigned } from '../core/format.js';
 
 const GUARD_MS = 450; // ignore Enter/Space right after the round ends (a late answer keystroke must not restart it)
@@ -100,7 +100,7 @@ export function renderResults(root, { game, result, summary, services, practice,
   const again = h('button', { class: 'btn btn-primary btn-big', type: 'button', id: 'again', onClick: guarded(onAgain) }, 'Again');
   nodes.push(
     h('div', { class: 'stack-sm' }, again, h('button', { class: 'btn', type: 'button', onClick: onHome }, practice ? 'Back' : 'Home')),
-    h('p', { class: 'muted small' }, PLACEHOLDER_NOTE, ' Enter or Space plays again.'),
+    h('p', { class: 'muted small' }, benchmarkNote(), ' Enter or Space plays again.'),
   );
 
   root.replaceChildren(h('div', { class: 'stack results' }, nodes));

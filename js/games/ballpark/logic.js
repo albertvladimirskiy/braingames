@@ -1,5 +1,6 @@
 // Ballpark: estimate parsing, log-error scoring, procedural question generation, question selection. Pure.
 import { clamp } from '../../core/scoring.js';
+import { BALLPARK_BANK } from '../../../data/ballpark-bank.js';
 
 export const SOFT_MS = 25000;
 export const FREE_QUESTIONS = 8;
@@ -117,6 +118,9 @@ export function pickQuestions(rng, count, { bank, exclude = [] }) {
   }
   return rng.shuffle(out);
 }
+
+/** The question set for a run: used by the view AND by server-side Daily verification, so they cannot diverge. */
+export const buildSet = (rng, count, exclude = []) => pickQuestions(rng, count, { bank: BALLPARK_BANK, exclude });
 
 /** Aggregate answers for the end screen. */
 export function summarize(answers) {

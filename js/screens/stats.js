@@ -1,12 +1,12 @@
 // Stats: skill ratings, 7-day XP sparkline, lifetime calibration, vocab progress, achievements, personal bests.
 import { h, svg } from '../core/ui.js';
-import { SKILLS, RATING, PLACEHOLDER_NOTE } from '../config.js';
+import { SKILLS, RATING } from '../config.js';
 import { games } from '../games/registry.js';
 import { DECKS } from '../games/wordbank/decks.js';
 import { ACHIEVEMENTS } from '../core/achievements.js';
 import { calibrationChart } from '../games/sure/chart.js';
 import { calibrationSentence } from '../core/calibration.js';
-import { ratingTier, TIERS } from '../core/benchmarks.js';
+import { ratingTier, TIERS, benchmarkNote } from '../core/benchmarks.js';
 import { levelInfo } from '../core/scoring.js';
 import { deckProgress, dayIndex } from '../core/srs.js';
 import { utcDate, addDays } from '../core/daily.js';
@@ -73,7 +73,7 @@ export function renderStats(outlet, services) {
         h('div', { class: 'kv' }, h('span', null, 'Reps level'), h('strong', { class: 'tabular' }, lv.level)),
         h('div', { class: 'kv' }, h('span', null, 'XP'), h('strong', { class: 'tabular' }, `${formatInt(lv.xp)} (${lv.into}/${lv.needed} to next)`)),
         h('div', { class: 'kv' }, h('span', null, 'Games played'), h('strong', { class: 'tabular' }, st.counters.runs))),
-      h('section', { class: 'card stack-sm' }, h('h2', null, 'Skill ratings'), skillRows(st), h('p', { class: 'muted small' }, PLACEHOLDER_NOTE)),
+      h('section', { class: 'card stack-sm' }, h('h2', null, 'Skill ratings'), skillRows(st), h('p', { class: 'muted small' }, benchmarkNote())),
       h('section', { class: 'card stack-sm' }, h('h2', null, 'XP, last 7 days'), xpSparkline(st)),
       h('section', { class: 'card stack-sm' },
         h('h2', null, 'Lifetime calibration'),

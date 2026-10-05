@@ -118,7 +118,7 @@ test('sanitize: hostile or corrupted fields never crash and fall back to safe va
   const s = migrate(nasty);
   assert.equal(s.xp, 0);
   assert.equal(s.rev, 0);
-  assert.deepEqual(s.settings, { sound: true, haptics: true, theme: 'system', motion: 'system' });
+  assert.deepEqual(s.settings, { sound: true, haptics: true, theme: "system", motion: "system", sync: null });
   assert.deepEqual(Object.keys(s.ratings), ['estimation']);
   assert.deepEqual(s.history, []);
   assert.deepEqual(Object.keys(s.bests), ['sure']);
@@ -143,4 +143,15 @@ test('a corrupted-but-parseable saved state loads instead of crashing the app', 
   const s = createStorage(be);
   assert.ok(Array.isArray(s.get().history));
   assert.doesNotThrow(() => s.update((st) => st.history.push({ gameId: 'x', score: 1, at: 1 })));
+});
+
+test('prototype-pollution style keys are dropped, never applied', () => {
+  const evil = JSON.parse('{"v":1,"ratings":{"__proto__":{"r":1,"n":1},"attention":{"r":1000,"n":1}},"srs":{"__proto__":{"x":{"box":1,"due":1,"lapses":0,"seen":0}},"italian":{"constructor":{"box":1,"due":1,"lapses":0,"seen":0}}},"seen":{"__proto__":["a"]},"bests":{"constructor":{"score":1}}}');
+  const s = migrate(evil);
+  assert.deepEqual(Object.keys(s.ratings), ['attention']);
+  assert.deepEqual(Object.keys(s.srs), ['italian']);
+  assert.deepEqual(Object.keys(s.srs.italian), []);
+  assert.deepEqual(Object.keys(s.seen), []);
+  assert.deepEqual(Object.keys(s.bests), []);
+  assert.equal({}.r, undefined, 'Object.prototype untouched');
 });

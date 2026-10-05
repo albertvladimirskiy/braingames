@@ -171,3 +171,6 @@ a.rec-card { display: flex; flex-direction: column; gap: 2px; }
 .seg-learning { background: var(--warn); }
 .share-text { margin: 0; padding: var(--space-4); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-2); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: var(--fs-2); white-space: pre-wrap; }
 body.in-game .nav { display: none; }
+.break { overflow-wrap: anywhere; text-align: right; }
+.lb-list li { display: flex; justify-content: space-between; }
+details summary { min-height: var(--touch); display: flex; align-items: center; cursor: pointer; font-weight: var(--fw-bold); }

@@ -7,7 +7,7 @@ export function defaultState() {
   return {
     v: SCHEMA_VERSION,
     rev: 0, // bumped on every save; lets a second tab notice it is behind
-    settings: { sound: true, haptics: true, theme: 'system', motion: 'system' },
+    settings: { sound: true, haptics: true, theme: 'system', motion: 'system', sync: null }, // sync = optional server link
     ratings: {}, // skillId -> { r, n }
     xp: 0,
     history: [], // { gameId, mode, score, at, xp }
@@ -52,7 +52,9 @@ export function withDefaults(value, defaults) {
 
 const num = (x, min = -Infinity) => typeof x === 'number' && Number.isFinite(x) && x >= min;
 const isDate = (x) => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x);
-const mapValues = (obj, keep) => Object.fromEntries(Object.entries(isObj(obj) ? obj : {}).filter(([, v]) => keep(v)));
+// '__proto__'/'constructor'/'prototype' are never legitimate record ids; dropping them keeps merged maps prototype-safe
+const safeKey = (k) => k !== '__proto__' && k !== 'constructor' && k !== 'prototype';
+const mapValues = (obj, keep) => Object.fromEntries(Object.entries(isObj(obj) ? obj : {}).filter(([k, v]) => safeKey(k) && keep(v)));
 
 /**
  * Coerce a (possibly corrupted or hand-edited) state into something the app can safely use:
@@ -72,13 +74,16 @@ export function sanitize(state) {
     haptics: typeof st.haptics === 'boolean' ? st.haptics : true,
     theme: ['system', 'dark', 'light'].includes(st.theme) ? st.theme : 'system',
     motion: ['system', 'reduce', 'full'].includes(st.motion) ? st.motion : 'system',
+    sync: isObj(st.sync) && /^https?:\/\//.test(st.sync.url) && typeof st.sync.token === 'string' && typeof st.sync.deviceId === 'string'
+      ? { url: st.sync.url.replace(/\/+$/, ''), deviceId: st.sync.deviceId, token: st.sync.token, name: typeof st.sync.name === 'string' ? st.sync.name.slice(0, 20) : '' }
+      : null,
   };
   s.ratings = mapValues(s.ratings, (v) => isObj(v) && num(v.r) && num(v.n, 0));
   s.history = s.history.filter((h) => isObj(h) && typeof h.gameId === 'string' && num(h.score) && num(h.at));
   s.bests = mapValues(s.bests, (v) => isObj(v) && num(v.score));
   s.counters = { runs: num(s.counters.runs, 0) ? s.counters.runs : 0 };
   s.srs = Object.fromEntries(
-    Object.entries(s.srs).filter(([, deck]) => isObj(deck)).map(([id, deck]) => [
+    Object.entries(s.srs).filter(([id, deck]) => safeKey(id) && isObj(deck)).map(([id, deck]) => [
       id,
       mapValues(deck, (c) => isObj(c) && Number.isInteger(c.box) && c.box >= 1 && c.box <= 5 && num(c.due) && num(c.lapses, 0) && num(c.seen, 0)),
     ]),
@@ -86,7 +91,7 @@ export function sanitize(state) {
   const b = s.calibration.buckets;
   const okBuckets = Array.isArray(b) && b.length === 5 && b.every((x) => isObj(x) && num(x.n, 0) && num(x.hits, 0) && num(x.sumQ, 0));
   s.calibration = { buckets: okBuckets ? b : d.calibration.buckets };
-  s.seen = Object.fromEntries(Object.entries(s.seen).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, v.filter((x) => typeof x === 'string')]));
+  s.seen = Object.fromEntries(Object.entries(s.seen).filter(([k, v]) => safeKey(k) && Array.isArray(v)).map(([k, v]) => [k, v.filter((x) => typeof x === 'string')]));
   const dl = s.daily;
   s.daily = {
     results: mapValues(dl.results, (v) => isObj(v) && isObj(v.scores) && num(v.total)),

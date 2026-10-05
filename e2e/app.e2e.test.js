@@ -180,7 +180,7 @@ test('accessibility: every control is named, targets ≥ 48px, one h1, no horizo
     const issues = [];
     const name = (e) => (e.getAttribute('aria-label') || e.innerText || e.value || '').trim() || (e.labels?.length ? 'label' : '') || e.getAttribute('aria-labelledby');
     for (const e of document.querySelectorAll('button, a[href], input, select, textarea')) {
-      if (e.closest('[hidden], [inert]')) continue;
+      if (e.closest('[hidden], [inert]') || (e.closest('details:not([open])') && e.tagName !== 'SUMMARY')) continue; // not rendered
       if (!name(e)) issues.push(`unnamed ${e.outerHTML.slice(0, 70)}`);
       const r = e.getBoundingClientRect();
       const insideLabel = e.type === 'checkbox' && e.closest('label');

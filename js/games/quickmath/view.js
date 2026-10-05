@@ -27,6 +27,7 @@ export function createQuickMath(ctx) {
   let activeMs = 0;
   let lastSec = -1;
   const items = [];
+  const log = []; // [{ v: typed value | null for skip, t: ms }] lets the server replay a Daily
 
   let stage, hud, problemEl, answerEl, feedbackEl, flashLayer, levelEl;
   const loop = createLoop((dt) => {
@@ -64,6 +65,7 @@ export function createQuickMath(ctx) {
   function answer(outcome) {
     const timeMs = itemMs;
     const solved = problem;
+    log.push({ v: outcome === 'skip' ? null : Number(input), t: Math.round(timeMs) });
     const res = resolve(state, outcome);
     state = res.state;
     items.push({
@@ -144,7 +146,7 @@ export function createQuickMath(ctx) {
         correct: state.correct, wrong: state.wrong, skipped: state.skipped,
         accuracy: attempts ? state.correct / attempts : 0,
         avgTimeMs: good.length ? good.reduce((a, i) => a + i.timeMs, 0) / good.length : 0,
-        bestStreak: state.bestStreak, maxLevel: state.maxLevel,
+        bestStreak: state.bestStreak, maxLevel: state.maxLevel, log,
       },
     });
   }

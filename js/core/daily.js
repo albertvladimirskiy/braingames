@@ -47,12 +47,12 @@ export function liveStreak(daily, today) {
  * Record a finished daily. `scores` = normalized per-segment scores. Only the first completion of a
  * UTC date counts. Returns { daily (new), counted, total, streak, frozen, earnedFreeze }.
  */
-export function recordDaily(daily, date, scores) {
+export function recordDaily(daily, date, scores, extra = {}) {
   const total = Object.values(scores).reduce((a, b) => a + b, 0);
   if (daily.results[date]) {
     return { daily, counted: false, total, streak: daily.streak, frozen: 0, earnedFreeze: false };
   }
-  const next = { ...daily, results: { ...daily.results, [date]: { scores, total } }, completed: daily.completed + 1, progress: null };
+  const next = { ...daily, results: { ...daily.results, [date]: { scores, total, ...extra } }, completed: daily.completed + 1, progress: null };
   let frozen = 0;
   let advanced = false;
   if (!daily.lastDate) {

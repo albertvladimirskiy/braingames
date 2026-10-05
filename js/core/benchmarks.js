@@ -1,3 +1,5 @@
+import { PLACEHOLDER_NOTE } from '../config.js';
+
 // Two benchmark layers. EVERY cutoff in the app lives in this file.
 // The UI states they are placeholders (see PLACEHOLDER_NOTE in config.js).
 
@@ -61,4 +63,36 @@ export function compareToHistory(history, gameId, score, nowMs) {
     deltaAvg: avg7 == null ? null : score - avg7,
     isPb: pb != null && score > pb,
   };
+}
+
+// ---- optional server calibration ----------------------------------------------------------------
+// When the player is connected to a server that has enough data (GET /v1/benchmarks), its percentile-based
+// cutoffs replace the placeholders above for the games/tiers it covers. Offline play keeps the last result.
+let calibration = null;
+const validCuts = (c) => Array.isArray(c) && c.length === 3 && c.every(Number.isFinite) && c[0] < c[1] && c[1] < c[2];
+
+export function applyCalibration(b) {
+  if (!b || b.source !== 'calibrated') return false;
+  let used = false;
+  for (const [id, cuts] of Object.entries(b.games ?? {})) {
+    if (GAME_GRADES[id] && validCuts(cuts)) {
+      GAME_GRADES[id] = cuts;
+      used = true;
+    }
+  }
+  if (validCuts(b.rating)) {
+    b.rating.forEach((min, i) => (TIERS[i + 1].min = min));
+    used = true;
+  }
+  if (used) calibration = { devices: b.sample?.devices ?? 0, games: Object.keys(b.games ?? {}), rating: validCuts(b.rating) };
+  return used;
+}
+
+export const calibrationInfo = () => calibration;
+
+/** The honest label for the benchmark numbers currently in use. */
+export function benchmarkNote() {
+  if (!calibration) return PLACEHOLDER_NOTE;
+  const covered = calibration.games.length;
+  return `Cutoffs for ${covered} game${covered === 1 ? '' : 's'}${calibration.rating ? ' and the rating tiers' : ''} are calibrated from ${calibration.devices} players’ runs. Anything not covered is still a placeholder.`;
 }

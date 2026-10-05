@@ -1,5 +1,6 @@
-import { h, toast } from '../core/ui.js';
-import { APP_NAME, VERSION, PLACEHOLDER_NOTE } from '../config.js';
+import { h, fill, toast } from '../core/ui.js';
+import { APP_NAME, VERSION } from '../config.js';
+import { benchmarkNote } from '../core/benchmarks.js';
 import { applySettings } from '../core/settings.js';
 
 function toggle(label, id, checked, onChange) {
@@ -15,6 +16,53 @@ function select(label, id, value, options, onChange) {
     h('select', { id, onChange: (e) => onChange(e.target.value) },
       options.map(([v, text]) => h('option', { value: v, selected: v === value }, text))),
   );
+}
+
+
+function syncCard(services) {
+  const { sync, storage } = services;
+  const box = h('section', { class: 'card stack-sm', id: 'sync-card' });
+  const urlIn = h('input', { type: 'text', id: 'sync-url', placeholder: 'https://your-server.example or http://localhost:8787', 'aria-label': 'Server URL', autocomplete: 'off', autocapitalize: 'none', spellcheck: 'false' });
+  const nameIn = h('input', { type: 'text', id: 'sync-name', placeholder: 'Display name (optional)', 'aria-label': 'Display name for the leaderboard', maxlength: '20', autocomplete: 'off' });
+  const codeIn = h('input', { type: 'text', id: 'sync-code', placeholder: 'Paste a link code from another device', 'aria-label': 'Link code', autocomplete: 'off', spellcheck: 'false' });
+  const say = h('p', { class: 'muted', id: 'sync-status', role: 'status', 'aria-live': 'polite' });
+  const run = async (fn, okMsg) => {
+    say.textContent = 'Working…';
+    try {
+      await fn();
+      say.textContent = okMsg;
+    } catch (err) {
+      say.textContent = err.message;
+    }
+    draw();
+  };
+
+  function draw() {
+    const cfg = storage.get().settings.sync;
+    const intro = h('p', { class: 'muted' }, 'Optional and off by default. Nothing leaves this device until you connect a server you trust (see docs/BACKEND_PLAN.md). Connecting uploads your progress and Daily answers there; the server re-checks Daily scores.');
+    if (!cfg) {
+      fill(box, h('h2', null, 'Sync & leaderboard'), intro, urlIn, nameIn,
+        h('button', { class: 'btn', type: 'button', id: 'sync-connect', onClick: () => run(() => sync.connect(urlIn.value, nameIn.value), 'Connected and synced.') }, 'Connect'),
+        h('details', null, h('summary', null, 'Link this device to another one'), h('div', { class: 'stack-sm' }, codeIn,
+          h('button', { class: 'btn', type: 'button', id: 'sync-link', onClick: () => run(() => sync.connectWithCode(codeIn.value, nameIn.value), 'Linked and synced.') }, 'Link with code'))),
+        say);
+      return;
+    }
+    const st = sync.status;
+    fill(box, h('h2', null, 'Sync & leaderboard'), intro,
+      h('div', { class: 'kv' }, h('span', null, 'Server'), h('strong', { class: 'break' }, cfg.url)),
+      h('div', { class: 'kv' }, h('span', null, 'Status'), h('strong', null, st.state === 'error' ? `Error: ${st.message}` : st.message || 'Connected')),
+      h('div', { class: 'row wrap' },
+        h('button', { class: 'btn', type: 'button', id: 'sync-now', onClick: () => run(() => sync.syncNow().then((r) => { if (!r.ok) throw new Error(r.error); }), 'Synced.') }, 'Sync now'),
+        h('button', { class: 'btn', type: 'button', id: 'sync-show-code', onClick: () => { codeOut.value = sync.linkCode(); codeOut.hidden = false; codeOut.select(); } }, 'Show link code'),
+        h('button', { class: 'btn btn-danger', type: 'button', id: 'sync-disconnect', onClick: () => { sync.disconnect(); say.textContent = 'Disconnected. Local data was kept.'; draw(); } }, 'Disconnect')),
+      codeOut,
+      h('p', { class: 'muted small' }, 'A link code lets another device use the same anonymous identity. Treat it like a password.'),
+      say);
+  }
+  const codeOut = h('input', { type: 'text', id: 'sync-code-out', readonly: true, hidden: true, 'aria-label': 'Your link code' });
+  draw();
+  return box;
 }
 
 export function renderSettings(outlet, services) {
@@ -76,10 +124,11 @@ export function renderSettings(outlet, services) {
           },
         }, 'Reset all data'),
       ),
+      syncCard(services),
       h('div', { class: 'card' },
         h('h2', null, 'About'),
         h('p', null, `${APP_NAME} v${VERSION}. Short games for practicing mental skills.`),
-        h('p', { class: 'muted' }, PLACEHOLDER_NOTE),
+        h('p', { class: 'muted' }, benchmarkNote()),
       ),
     ),
   );

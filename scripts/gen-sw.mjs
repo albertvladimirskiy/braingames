@@ -20,7 +20,8 @@ export function computePrecache() {
   for (const d of DIRS) for (const p of walk(join(root, d))) files.push(relative(root, p).split('\\').join('/'));
   files.sort();
   const hash = createHash('sha1');
-  for (const f of files) hash.update(f).update(readFileSync(join(root, f)));
+  // hash text files with line endings normalised so a CRLF checkout and an LF checkout agree
+  for (const f of files) hash.update(f).update(/\.(png)$/.test(f) ? readFileSync(join(root, f)) : readFileSync(join(root, f), 'utf8').replaceAll(String.fromCharCode(13), ''));
   return { files: ['./', ...files], build: hash.digest('hex').slice(0, 10) };
 }
 

@@ -14,7 +14,10 @@
     "lint": "eslint .",
     "audit:exports": "node scripts/unused-exports.mjs",
     "e2e": "node --test \"e2e/**/*.e2e.test.js\"",
-    "verify": "npm run lint && npm run check && npm test && npm run e2e"
+    "verify": "npm run lint && npm run check && npm test && npm run e2e",
+    "server": "node server/index.js",
+    "perf": "node scripts/perf-audit.mjs",
+    "calibrate": "node scripts/calibrate.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

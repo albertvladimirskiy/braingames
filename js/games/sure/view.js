@@ -5,8 +5,7 @@ import { createLoop } from '../../core/loop.js';
 import { createHud } from '../hud.js';
 import { formatSigned } from '../../core/format.js';
 import { brierPoints } from '../../core/calibration.js';
-import { TF_QUESTIONS } from '../../../data/tf-questions.js';
-import { pickQuestions, scoreQuestion, summarizeSession, FREE_QUESTIONS, DAILY_QUESTIONS, QUESTION_MS, CONF_SNAPS } from './logic.js';
+import { buildSet, scoreQuestion, summarizeSession, FREE_QUESTIONS, DAILY_QUESTIONS, QUESTION_MS, CONF_SNAPS } from './logic.js';
 
 const NEXT_GUARD_MS = 350;
 const DEFAULT_CONF = 60;
@@ -17,7 +16,7 @@ export function createSure(ctx) {
   const em = createEmitter();
   const total = config?.questions ?? (mode === 'daily' ? DAILY_QUESTIONS : FREE_QUESTIONS);
   const exclude = mode === 'free' ? (services.storage.get().seen.sure ?? []) : [];
-  const questions = pickQuestions(rng, TF_QUESTIONS, total, exclude);
+  const questions = buildSet(rng, total, exclude);
 
   let idx = 0;
   let phase = 'idle'; // idle | choose | confidence | feedback
@@ -29,6 +28,7 @@ export function createSure(ctx) {
   let score = 0;
   let feedbackAt = 0;
   const answers = [];
+  const log = []; // [{ c: 'T'|'F'|null, p: confidence, t: ms }] lets the server re-score a Daily
 
   let stage, hud, flashLayer, progressEl, statementEl, choosePanel, confPanel, fbPanel, nextBtn, slider, readout, previewEl, askLabel;
   const loop = createLoop((dt) => {
@@ -74,6 +74,7 @@ export function createSure(ctx) {
   }
 
   function record(entry) {
+    log.push({ c: entry.chosen === null ? null : entry.chosen ? 'T' : 'F', p: entry.confidence, t: Math.round(qMs) });
     answers.push({ ...entry, id: questions[idx].id, tag: questions[idx].tag, timeMs: qMs });
     score += entry.points;
     hud.setScore(score);
@@ -157,7 +158,7 @@ export function createSure(ctx) {
     em.emit('finish', {
       gameId: 'sure', mode, score: s.score, durationMs: Math.round(activeMs), items: s.items,
       stats: {
-        answered: s.answered, correct: s.correct, brier: s.brier, calibration: s.samples,
+        answered: s.answered, correct: s.correct, brier: s.brier, calibration: s.samples, log,
         accuracy: s.answered ? s.correct / s.answered : 0,
         seenIds: mode === 'free' ? answers.map((a) => a.id) : [],
         review: answers.filter((a) => !a.correct && !a.timedOut).map((a) => ({ id: a.id, confidence: a.confidence })),

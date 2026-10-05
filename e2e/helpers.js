@@ -164,3 +164,30 @@ export const oddsBot = () => {
   opts.find((b) => b.querySelector('.wb-option-text').textContent === `${pct}%`).click();
   return 'ok';
 };
+
+/** Plays a whole Daily (all three segments) with the bots, starting from the overview screen, and stops on the final screen. */
+export async function playDaily(page) {
+  await page.click('#daily-start');
+  await countdown(page);
+  await play(page, qmBot, { tickMs: 650 });
+  await page.click('#daily-next');
+  await countdown(page);
+  // human-ish pace (≥1s per answer) so the server's plausibility check does not flag the bot
+  await play(page, ballparkBot, { tickMs: 1000 });
+  await page.click('#daily-next');
+  await countdown(page);
+  await play(page, sureBot, { tickMs: 1000 });
+  await page.click('#daily-next');
+  await page.waitForSelector('#daily-copy');
+}
+
+/** Starts the reference backend in-process on a free port with a fixed clock. Returns { url, store, close }. */
+export async function startBackend(nowMs = Date.parse(START)) {
+  const { createApp } = await import('../server/index.js');
+  const { createStore } = await import('../server/store.js');
+  const http = await import('node:http');
+  const store = createStore();
+  const server = http.createServer(createApp({ store, now: () => nowMs }));
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  return { url: `http://127.0.0.1:${server.address().port}`, store, close: () => new Promise((r) => server.close(r)) };
+}

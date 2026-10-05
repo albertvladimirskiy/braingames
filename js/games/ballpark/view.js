@@ -4,8 +4,7 @@ import { createEmitter } from '../../core/events.js';
 import { createLoop } from '../../core/loop.js';
 import { createHud } from '../hud.js';
 import { formatValue } from '../../core/format.js';
-import { BALLPARK_BANK } from '../../../data/ballpark-bank.js';
-import { parseEstimate, scoreAnswer, describeMiss, pickQuestions, summarize, SOFT_MS, FREE_QUESTIONS, DAILY_QUESTIONS } from './logic.js';
+import { parseEstimate, scoreAnswer, describeMiss, buildSet, summarize, SOFT_MS, FREE_QUESTIONS, DAILY_QUESTIONS } from './logic.js';
 
 const NEXT_GUARD_MS = 350; // the Enter that locked in an answer must not also skip its feedback
 
@@ -15,7 +14,7 @@ export function createBallpark(ctx) {
   const em = createEmitter();
   const total = config?.questions ?? (mode === 'daily' ? DAILY_QUESTIONS : FREE_QUESTIONS);
   const exclude = mode === 'free' ? (services.storage.get().seen.ballpark ?? []) : [];
-  const questions = pickQuestions(rng, total, { bank: BALLPARK_BANK, exclude });
+  const questions = buildSet(rng, total, exclude);
 
   let idx = 0;
   let phase = 'idle'; // idle | ask | feedback
@@ -26,6 +25,7 @@ export function createBallpark(ctx) {
   let score = 0;
   let feedbackAt = 0;
   const answers = [];
+  const log = []; // [{ e: estimate, t: ms }] lets the server re-score a Daily
   const items = [];
 
   let stage, hud, flashLayer, progressEl, qText, unitEl, input, errorEl, askEl, fbEl, nextBtn, inputRow;
@@ -69,6 +69,7 @@ export function createBallpark(ctx) {
     const q = questions[idx];
     const sc = scoreAnswer({ estimate: parsed.value, truth: q.truth, timeMs: qMs });
     score += sc.points;
+    log.push({ e: parsed.value, t: Math.round(qMs) });
     answers.push({ id: q.id, text: q.text, unit: q.unit, truth: q.truth, estimate: parsed.value, err: sc.err, points: sc.points, timeMs: qMs });
     items.push({ skill: 'estimation', difficulty: 800 + 100 * q.difficulty, correct: sc.err <= 0.5, s: sc.s, timeMs: qMs, targetMs: SOFT_MS });
     hud.setScore(score);
@@ -129,7 +130,7 @@ export function createBallpark(ctx) {
     em.emit('finish', {
       gameId: 'ballpark', mode, score, durationMs: Math.round(activeMs), items,
       stats: {
-        answers, avgErrFactor: s.typicalFactor, questions: total,
+        answers, log, avgErrFactor: s.typicalFactor, questions: total,
         accuracy: answers.length ? answers.filter((a) => a.err <= 0.5).length / answers.length : 0,
         seenIds: mode === 'free' ? answers.filter((a) => a.id.startsWith('bp-')).map((a) => a.id) : [],
       },
