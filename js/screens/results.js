@@ -90,7 +90,11 @@ export function renderResults(root, { game, result, summary, services, practice,
   }
 
   const extras = h('div', { class: 'stack' });
-  game.renderResult?.(extras, result, services);
+  try {
+    game.renderResult?.(extras, result, services);
+  } catch {
+    extras.replaceChildren(); // a game's extra charts must never take the whole results screen down
+  }
   nodes.push(extras);
 
   const again = h('button', { class: 'btn btn-primary btn-big', type: 'button', id: 'again', onClick: guarded(onAgain) }, 'Again');

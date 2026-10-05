@@ -83,7 +83,7 @@ export function renderHome(outlet, services) {
 
   outlet.append(
     h('div', { class: 'stack' },
-      h('div', { class: 'topbar' }, h('span', { class: 'brand' }, APP_NAME), h('span', { class: 'chip' }, `Reps level ${level.level}`)),
+      h('div', { class: 'topbar' }, h('h1', { class: 'brand' }, APP_NAME), h('span', { class: 'chip' }, `Reps level ${level.level}`)),
       welcome,
       dailyCard,
       recRow,

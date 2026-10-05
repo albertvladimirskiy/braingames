@@ -20,3 +20,7 @@ test('daily / stats / settings', () => {
 test('trailing slashes and encoding', () => {
   assert.equal(parseHash('#/play/a%20b/').id, 'a b');
 });
+test('malformed percent-escapes do not throw', () => {
+  assert.doesNotThrow(() => parseHash('#/play/%E0%A4%A'));
+  assert.equal(parseHash('#/play/%E0%A4%A').name, 'play');
+});

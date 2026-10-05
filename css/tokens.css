@@ -24,7 +24,7 @@
   --on-quant: #0d0e13;
   --on-language: #0d0e13;
   --on-reasoning: #0d0e13;
-  --on-reflex: #ffffff;
+  --on-reflex: #0d0e13; /* white on coral is only 3.9:1; dark text is 5:1 */
   --accent: var(--quant);
   --on-accent: var(--on-quant);
 
@@ -32,6 +32,7 @@
   --ink-blue: #4da3ff;
   --ink-green: #3ccf8e;
   --ink-yellow: #ffd23f;
+  --stroop-bg: #14151c; /* the word panel stays dark in both themes so inks keep their canonical colours */
 
   --space-1: 4px;
   --space-2: 8px;

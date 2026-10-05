@@ -61,7 +61,7 @@ export function renderDaily(outlet, services) {
   function overview() {
     const st = storage.get();
     const result = st.daily.results[today];
-    if (result) return finalView(result.scores, { counted: true });
+    if (result) return finalView(result.scores, {});
     const progress = st.daily.progress?.date === today ? st.daily.progress.scores : {};
     const started = Object.keys(progress).length > 0;
     const streak = liveStreak(st.daily, today);
@@ -131,10 +131,10 @@ export function renderDaily(outlet, services) {
         for (const a of runAchievements(s, null, now())) toast(a.desc, { title: `Unlocked: ${a.name}` });
       });
     }
-    finalView(run.scores, { counted: !run.practice && info.counted, practice: run.practice, info });
+    finalView(run.scores, { practice: run.practice, info });
   }
 
-  function finalView(scores, { counted, practice = false, info = null }) {
+  function finalView(scores, { practice = false, info = null }) {
     const st = storage.get();
     const total = Object.values(scores).reduce((a, b) => a + b, 0);
     const streak = practice ? liveStreak(st.daily, today) : st.daily.streak;

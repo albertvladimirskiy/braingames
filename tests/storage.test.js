@@ -49,12 +49,14 @@ test('export → import round-trips state', () => {
   a.update((st) => {
     st.xp = 77;
     st.srs.italian = { 'it-1': { box: 3, due: 20000, lapses: 1, seen: 4 } };
-    st.daily.results['2026-10-05'] = { total: 900 };
+    st.daily.results['2026-10-05'] = { scores: { quickmath: 300 }, total: 900 };
   });
   const json = a.exportJson();
   const b = createStorage(memoryBackend());
   b.importJson(json);
-  assert.deepEqual(b.get(), a.get());
+  const { rev: _a, ...ra } = a.get();
+  const { rev: _b, ...rb } = b.get();
+  assert.deepEqual(rb, ra); // everything except the save counter
 });
 
 test('import rejects garbage and leaves state alone', () => {
@@ -89,4 +91,56 @@ test('subscribers are notified', () => {
   off();
   s.update(() => {});
   assert.equal(n, 1);
+});
+
+test('multi-tab: a second storage adopts the newer revision before writing (no lost update)', () => {
+  const be = memoryBackend();
+  const tabA = createStorage(be);
+  const tabB = createStorage(be);
+  tabA.update((st) => (st.xp = 5));
+  tabB.update((st) => (st.xp += 3)); // B was opened before A's write
+  assert.equal(tabB.get().xp, 8);
+  assert.equal(createStorage(be).get().xp, 8);
+  tabA.update((st) => (st.counters.runs += 1));
+  assert.equal(tabA.get().xp, 8, 'A picked up B’s write too');
+});
+
+test('sanitize: hostile or corrupted fields never crash and fall back to safe values', () => {
+  const nasty = {
+    v: SCHEMA_VERSION, xp: 'lots', rev: -4, settings: { sound: 'yes', theme: 'neon', motion: 3 },
+    ratings: { attention: { r: 'x', n: 1 }, estimation: { r: 1200, n: 4 }, calibration: 7 },
+    history: 'nope', bests: { stroop: { score: Infinity }, sure: { score: 5, at: 1 } }, counters: [],
+    srs: { italian: { a: { box: 9, due: 1, lapses: 0, seen: 0 }, b: { box: 2, due: 5, lapses: 1, seen: 2 } }, bad: 'x' },
+    calibration: { buckets: [1, 2] }, seen: { sure: 'x', ballpark: ['a', 3, 'b'] },
+    daily: { results: { '2026-01-01': { scores: {}, total: 9 }, junk: 5 }, streak: -2, lastDate: 'yesterday', freezes: 9, progress: 'p' },
+    achievements: { first_rep: 'x', ok: 123 }, prefs: [], flags: { welcomed: 'true' },
+  };
+  const s = migrate(nasty);
+  assert.equal(s.xp, 0);
+  assert.equal(s.rev, 0);
+  assert.deepEqual(s.settings, { sound: true, haptics: true, theme: 'system', motion: 'system' });
+  assert.deepEqual(Object.keys(s.ratings), ['estimation']);
+  assert.deepEqual(s.history, []);
+  assert.deepEqual(Object.keys(s.bests), ['sure']);
+  assert.deepEqual(s.counters, { runs: 0 });
+  assert.deepEqual(Object.keys(s.srs.italian), ['b']);
+  assert.equal(s.srs.bad, undefined);
+  assert.equal(s.calibration.buckets.length, 5);
+  assert.deepEqual(s.seen, { ballpark: ['a', 'b'] });
+  assert.deepEqual(Object.keys(s.daily.results), ['2026-01-01']);
+  assert.equal(s.daily.streak, 0);
+  assert.equal(s.daily.lastDate, null);
+  assert.equal(s.daily.freezes, 2);
+  assert.equal(s.daily.progress, null);
+  assert.deepEqual(s.achievements, { ok: 123 });
+  assert.deepEqual(s.flags, { welcomed: false });
+  assert.deepEqual(migrate(s), s, 'sanitizing is idempotent');
+});
+
+test('a corrupted-but-parseable saved state loads instead of crashing the app', () => {
+  const be = memoryBackend();
+  be.setItem(STORAGE_KEY, JSON.stringify({ v: SCHEMA_VERSION, history: 'boom', ratings: 5 }));
+  const s = createStorage(be);
+  assert.ok(Array.isArray(s.get().history));
+  assert.doesNotThrow(() => s.update((st) => st.history.push({ gameId: 'x', score: 1, at: 1 })));
 });

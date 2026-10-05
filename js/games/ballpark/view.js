@@ -64,6 +64,8 @@ export function createBallpark(ctx) {
       return;
     }
     loop.stop();
+    errorEl.textContent = '';
+    input.removeAttribute('aria-invalid');
     const q = questions[idx];
     const sc = scoreAnswer({ estimate: parsed.value, truth: q.truth, timeMs: qMs });
     score += sc.points;

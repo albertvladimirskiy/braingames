@@ -29,5 +29,3 @@ export function formatCountdown(ms) {
   const s = Math.max(0, Math.floor(ms / 1000));
   return `${pad2(Math.floor(s / 3600))}:${pad2(Math.floor((s % 3600) / 60))}:${pad2(s % 60)}`;
 }
-
-export const formatPct = (x, digits = 0) => `${(x * 100).toFixed(digits)}%`;

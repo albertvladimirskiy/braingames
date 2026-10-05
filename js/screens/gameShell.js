@@ -116,8 +116,12 @@ export function mountGame(outlet, opts) {
     countdown();
   }
 
+  // While an overlay is up, keep keyboard focus and screen readers out of the game behind it.
+  const setInert = (on, selector) => root.querySelectorAll(selector).forEach((el) => (el.inert = on));
+
   function countdown() {
     state = 'countdown';
+    setInert(true, '.stage');
     let shown = 3;
     const num = h('div', { class: 'countdown-num', 'aria-hidden': 'true' }, '3');
     const ov = h('div', { class: 'overlay opaque', role: 'status' }, h('p', { class: 'muted' }, 'Get ready'), num);
@@ -132,6 +136,7 @@ export function mountGame(outlet, opts) {
       if (n <= 0) {
         countLoop.stop();
         ov.remove();
+        setInert(false, '.stage');
         state = 'running';
         announce('Go');
         inst.start();
@@ -150,6 +155,7 @@ export function mountGame(outlet, opts) {
     if (state !== 'running') return;
     inst.pause();
     state = 'paused';
+    setInert(true, '.stage, .game-top');
     const resumeBtn = h('button', { class: 'btn btn-primary btn-big', type: 'button', onClick: resume }, 'Resume');
     pauseOverlay = h('div', { class: 'overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Paused' },
       h('h2', null, 'Paused'),
@@ -164,6 +170,7 @@ export function mountGame(outlet, opts) {
     if (state !== 'paused') return;
     pauseOverlay?.remove();
     pauseOverlay = null;
+    setInert(false, '.stage, .game-top');
     pauseBtn.textContent = 'Pause';
     state = 'running';
     inst.start();

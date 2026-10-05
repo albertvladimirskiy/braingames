@@ -4,7 +4,13 @@
 export function parseHash(hash) {
   const raw = (hash || '').replace(/^#\/?/, '');
   const [pathPart, queryPart = ''] = raw.split('?');
-  const segs = pathPart.split('/').filter(Boolean).map(decodeURIComponent);
+  const segs = pathPart.split('/').filter(Boolean).map((seg) => {
+    try {
+      return decodeURIComponent(seg);
+    } catch {
+      return seg; // malformed %-escape: keep it literal rather than crash the router
+    }
+  });
   const query = Object.fromEntries(new URLSearchParams(queryPart));
   return { name: segs[0] || 'home', params: segs.slice(1), id: segs[1] ?? null, query };
 }

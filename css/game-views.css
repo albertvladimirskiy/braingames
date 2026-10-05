@@ -73,8 +73,8 @@ kbd { font-family: inherit; font-size: var(--fs-1); padding: 0 var(--space-2); b
 .st-rule { text-align: center; font-weight: var(--fw-heavy); font-size: var(--fs-4); padding: var(--space-2) var(--space-3); border: var(--border-w) solid var(--accent); border-radius: var(--radius-2); }
 .st-rule[data-rule='word']::before { content: '⟲ '; }
 .st-banner { text-align: center; font-weight: var(--fw-heavy); font-size: var(--fs-4); padding: var(--space-4); border-radius: var(--radius-2); background: var(--accent); color: var(--on-accent); animation: pulse var(--dur-3) var(--ease); }
-.st-stage { min-height: 130px; display: flex; align-items: center; justify-content: center; }
-.st-word { font-size: var(--fs-8); font-weight: var(--fw-heavy); letter-spacing: 0.04em; text-shadow: 0 0 1px var(--text-muted); }
+.st-stage { min-height: 130px; display: flex; align-items: center; justify-content: center; background: var(--stroop-bg); border-radius: var(--radius-2); }
+.st-word { font-size: var(--fs-8); font-weight: var(--fw-heavy); letter-spacing: 0.04em; }
 .st-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
 .st-btn { min-height: 64px; justify-content: flex-start; gap: var(--space-3); font-size: var(--fs-3); }
 .st-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--text); flex: none; }

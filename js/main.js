@@ -50,12 +50,16 @@ const routes = {
   settings: (el) => renderSettings(el, services),
 };
 
+let firstRoute = true;
 startRouter({
   routes, outlet,
   onRoute: (route) => {
     renderNav(route);
     document.title = APP_NAME;
-    if (route.name !== 'play') outlet.focus({ preventScroll: true }); // announce the new screen to assistive tech
+    // After the first load, move focus to the new screen so assistive tech announces it. On first load keep
+    // focus at the top of the document so the skip link is the first Tab stop.
+    if (!firstRoute && route.name !== 'play') outlet.focus({ preventScroll: true });
+    firstRoute = false;
   },
 });
 
