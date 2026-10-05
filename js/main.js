@@ -1,8 +1,60 @@
-// Phase-1 placeholder entry: replaced by the full wiring in phase 2.
-import { APP_NAME } from './config.js';
+import { APP_NAME, DEBUG, query } from './config.js';
+import { createStorage } from './core/storage.js';
 import { startRouter } from './core/router.js';
 import { h } from './core/ui.js';
+import { applySettings } from './core/settings.js';
+import { audio } from './core/audio.js';
+import { haptics } from './core/haptics.js';
+import { juice } from './core/juice.js';
+import * as rating from './core/rating.js';
+import * as clock from './core/clock.js';
+import { games } from './games/registry.js';
+import { mountGame } from './screens/gameShell.js';
+import { renderHome } from './screens/home.js';
+import { renderSettings } from './screens/settings.js';
+
+const storage = createStorage();
+const services = { storage, rating, audio, haptics, juice, clock };
+applySettings(storage.get().settings, services);
+for (const q of ['(prefers-color-scheme: light)', '(prefers-reduced-motion: reduce)']) {
+  matchMedia(q).addEventListener('change', () => applySettings(storage.get().settings, services));
+}
+// Browsers only allow audio after a gesture.
+addEventListener('pointerdown', () => audio.unlock(), { once: true, passive: true });
+addEventListener('keydown', () => audio.unlock(), { once: true, passive: true });
 
 const outlet = document.getElementById('main');
-const page = (title) => (el) => el.append(h('h1', null, `${APP_NAME} — ${title}`));
-startRouter({ outlet, routes: { home: page('home'), daily: page('daily'), stats: page('stats'), settings: page('settings'), play: page('play') } });
+const nav = document.getElementById('nav');
+const NAV = [['home', 'Home'], ['daily', 'Daily'], ['stats', 'Stats'], ['settings', 'Settings']];
+
+function renderNav(route) {
+  nav.hidden = route.name === 'play';
+  nav.replaceChildren(
+    h('div', { class: 'nav-inner' },
+      NAV.map(([name, label]) => h('a', { href: `#/${name}`, 'aria-current': route.name === name ? 'page' : null }, label)),
+    ),
+  );
+}
+
+const routes = {
+  home: (el) => renderHome(el, services),
+  play: (el, route) => mountGame(el, { services, gameId: route.id, query: route.query }),
+  daily: (el) => el.append(h('h1', null, 'Daily')),
+  stats: (el) => el.append(h('h1', null, 'Stats')),
+  settings: (el) => renderSettings(el, services),
+};
+
+startRouter({ routes, outlet, onRoute: (route) => { renderNav(route); document.title = APP_NAME; } });
+
+if (DEBUG) {
+  window.__reps = {
+    storage, services, games, clock,
+    state: () => storage.get(),
+    patch: (fn) => storage.update(fn),
+  };
+}
+
+const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+if ('serviceWorker' in navigator && (!isLocal || query.has('sw'))) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}

@@ -1,25 +1,46 @@
 /* Service worker: cache-first app shell. The block between the GENERATED markers is
    rewritten by `npm run gen` (scripts/gen-sw.mjs); tests fail if it is stale. */
 /* GENERATED:START */
-const BUILD = '46dc495a36';
+const BUILD = 'b8d22dde2f';
 const PRECACHE = [
   "./",
   "css/base.css",
   "css/components.css",
+  "css/game-views.css",
   "css/games.css",
   "css/tokens.css",
   "icons/icon-maskable.svg",
   "icons/icon.svg",
   "index.html",
   "js/config.js",
+  "js/core/achievements.js",
+  "js/core/audio.js",
+  "js/core/benchmarks.js",
+  "js/core/calibration.js",
   "js/core/clock.js",
+  "js/core/daily.js",
   "js/core/events.js",
   "js/core/format.js",
+  "js/core/haptics.js",
+  "js/core/juice.js",
+  "js/core/loop.js",
   "js/core/prng.js",
+  "js/core/progress.js",
+  "js/core/rating.js",
   "js/core/router.js",
+  "js/core/scoring.js",
+  "js/core/settings.js",
+  "js/core/srs.js",
   "js/core/storage.js",
   "js/core/ui.js",
+  "js/games/dummy/index.js",
+  "js/games/hud.js",
+  "js/games/registry.js",
   "js/main.js",
+  "js/screens/gameShell.js",
+  "js/screens/home.js",
+  "js/screens/results.js",
+  "js/screens/settings.js",
   "manifest.webmanifest"
 ];
 /* GENERATED:END */

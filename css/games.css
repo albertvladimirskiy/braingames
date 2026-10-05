@@ -1,1 +1,92 @@
-/* filled in phase 3+ */
+/* Game shell, HUD, juice effects, results. Per-game views live in game-views.css. */
+.game-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+.game-title { font-size: var(--fs-3); text-align: center; flex: 1; }
+.game-title small { font-weight: 400; color: var(--text-muted); }
+.stage { position: relative; display: flex; flex-direction: column; gap: var(--space-4); min-height: 60dvh; }
+
+.btn-big:has(.btn-sub) { flex-direction: column; gap: 2px; }
+.btn-sub { font-size: var(--fs-1); font-weight: 400; color: var(--text-muted); }
+.btn-primary .btn-sub { color: inherit; opacity: 0.85; }
+
+/* HUD */
+.hud { display: flex; flex-direction: column; gap: var(--space-2); }
+.hud-row { display: flex; justify-content: space-between; align-items: flex-end; }
+.hud-block { display: flex; flex-direction: column; }
+.hud-right { align-items: flex-end; }
+.hud-label { font-size: var(--fs-1); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.hud-score { font-size: var(--fs-6); font-weight: var(--fw-heavy); line-height: 1; font-variant-numeric: tabular-nums; }
+.hud-time { font-size: var(--fs-5); font-weight: var(--fw-bold); line-height: 1; font-variant-numeric: tabular-nums; }
+.timebar { height: 10px; border-radius: var(--radius-pill); background: var(--surface-3); overflow: hidden; }
+.timebar-fill { height: 100%; width: 100%; background: var(--accent); transform-origin: left center; will-change: transform; }
+.timebar.low .timebar-fill { background: var(--warn); }
+.timebar.critical .timebar-fill { background: var(--bad); }
+
+/* Streak / multiplier meter: escalates visibly with the multiplier */
+.meter { display: flex; align-items: center; gap: var(--space-3); }
+.meter-mult {
+  min-width: 3.2ch;
+  text-align: center;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-4);
+  transition: background var(--dur-2), box-shadow var(--dur-2);
+}
+.meter-streak { color: var(--text-muted); font-size: var(--fs-2); margin-left: auto; }
+.pips { display: flex; gap: 6px; }
+.pip { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: background var(--dur-1); }
+.pip.on { background: var(--accent); border-color: var(--accent); }
+.meter[data-mult='2'] .meter-mult { background: var(--accent); color: var(--on-accent); }
+.meter[data-mult='3'] .meter-mult { background: var(--accent); color: var(--on-accent); box-shadow: 0 0 14px var(--accent); }
+.meter[data-mult='4'] .meter-mult { background: var(--accent); color: var(--on-accent); box-shadow: 0 0 26px var(--accent); animation: throb 0.8s ease-in-out infinite alternate; }
+@keyframes throb { to { transform: scale(1.12); } }
+
+/* Juice */
+.pop {
+  position: absolute;
+  top: 28%;
+  z-index: 5;
+  font-size: var(--fs-5);
+  font-weight: var(--fw-heavy);
+  pointer-events: none;
+  animation: pop-up var(--dur-4) var(--ease) forwards;
+}
+.pop-good { color: var(--good); }
+.pop-bad { color: var(--bad); }
+.pop-bonus { color: var(--warn); }
+@keyframes pop-up {
+  0% { opacity: 0; transform: translateY(12px) scale(0.8); }
+  15% { opacity: 1; transform: translateY(0) scale(1.15); }
+  100% { opacity: 0; transform: translateY(-80px) scale(1); }
+}
+.fx-shake { animation: shake var(--dur-3) ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(9px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+.flash-layer { position: fixed; inset: 0; z-index: 30; pointer-events: none; opacity: 0; }
+.flash-layer.fx-flash-bad { background: var(--bad); animation: flash var(--dur-3) ease-out; }
+.flash-layer.fx-flash-good { background: var(--good); animation: flash var(--dur-2) ease-out; }
+@keyframes flash { 0% { opacity: 0.32; } 100% { opacity: 0; } }
+.fx-pulse { animation: pulse var(--dur-3) var(--ease); }
+@keyframes pulse { 50% { transform: scale(1.22); } }
+.confetti { position: fixed; inset: 0; z-index: 70; pointer-events: none; }
+
+/* Feedback line (always text + icon, never color alone) */
+.feedback { min-height: 2.6em; font-weight: var(--fw-bold); text-align: center; }
+.feedback.good { color: var(--good); }
+.feedback.bad { color: var(--bad); }
+
+/* Results */
+.results-head { text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+.results-score { font-size: var(--fs-8); }
+.results-badges { justify-content: center; }
+.chip-grade { background: var(--accent); color: var(--on-accent); }
+.chip-pb { background: var(--warn); color: var(--bg); }
+.goal .big-goal { font-size: var(--fs-5); font-weight: var(--fw-heavy); }
+.tier-change { font-weight: var(--fw-bold); }
+.small { font-size: var(--fs-1); }
