@@ -35,13 +35,22 @@ test('Daily: full run → combined result, share text, streak, persistence, prac
   assert.equal(s.daily.completed, 1);
   assert.equal(s.bests.quickmath, undefined, 'daily runs never set personal bests');
   assert.ok(s.history.every((h) => h.mode === 'daily'));
-  assert.match(await text(page), /New Daily in \d\d:\d\d:\d\d/);
+  assert.match(await text(page), /New Daily in \d\d:\d\d:\d[0-9]/);
 
   // copy button
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.click('#daily-copy');
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   assert.equal(copied.replaceAll(String.fromCharCode(13), ''), share); // Windows clipboards use CRLF
+
+  // share as image: a real 1080×1080 PNG download
+  const [download] = await Promise.all([page.waitForEvent('download'), page.click('#daily-image')]);
+  assert.match(download.suggestedFilename(), /^reps-daily-2026-10-05\.png$/);
+  const { readFile } = await import('node:fs/promises');
+  const png = await readFile(await download.path());
+  assert.deepEqual([...png.subarray(0, 4)], [0x89, 0x50, 0x4e, 0x47]);
+  assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1080, 1080]);
+  assert.ok(png.length > 10000, 'image has real content');
 
   // reload: completed state persists; Home shows the done card
   await page.goto(`${app.server.url}?debug#/home`);

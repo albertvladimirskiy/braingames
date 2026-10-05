@@ -2,6 +2,7 @@
 import { h, toast } from '../core/ui.js';
 import { mountGame } from './gameShell.js';
 import { mountResetCountdown } from './countdown.js';
+import { shareDailyImage } from './shareImage.js';
 import { getGame } from '../games/registry.js';
 import { now } from '../core/clock.js';
 import { navigate } from '../core/router.js';
@@ -159,6 +160,7 @@ export function renderDaily(outlet, services) {
       ),
       h('pre', { class: 'share-text', 'aria-label': 'Shareable result' }, text),
       copyBtn,
+      h('button', { class: 'btn btn-big', type: 'button', id: 'daily-image', onClick: () => shareDailyImage({ date: today, scores, total, streak }) }, 'Share as image'),
       h('button', { class: 'btn', type: 'button', onClick: () => start(true) }, 'Practice again (does not count)'),
       h('a', { class: 'btn btn-ghost', href: '#/home' }, 'Home'),
       countdown(),

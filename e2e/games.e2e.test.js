@@ -30,6 +30,10 @@ test('Quick Math: 60s round → results, ratings, PB, achievements; Enter replay
   await page.waitForSelector('.qm-problem');
   await countdown(page);
   assert.ok(await page.evaluate(() => document.querySelector('.hud-time').textContent) !== '0:00');
+  // Home shows the 7-day "ghost" average for this game
+  await page.evaluate(() => (location.hash = '#/home'));
+  assert.match(await page.textContent('.game-card:has-text("Quick Math")'), /7-day avg: [0-9]/);
+  assert.match(await page.textContent('.game-card:has-text("Ballpark")'), /No runs this week/);
   noErrors(errors);
 });
 

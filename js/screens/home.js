@@ -8,7 +8,7 @@ import { navigate } from '../core/router.js';
 import { utcDate, liveStreak } from '../core/daily.js';
 import { dayIndex } from '../core/srs.js';
 import { levelInfo } from '../core/scoring.js';
-import { ratingTier } from '../core/benchmarks.js';
+import { ratingTier, compareToHistory } from '../core/benchmarks.js';
 import { recommend } from '../core/recommend.js';
 import { formatInt } from '../core/format.js';
 import { mountResetCountdown } from './countdown.js';
@@ -69,13 +69,15 @@ export function renderHome(outlet, services) {
       h('h2', { class: 'cat-title' }, h('span', { class: 'chip chip-dot' }, meta.label)),
       h('div', { class: 'stack-sm' }, inCat.map((g) => {
         const best = st.bests[g.id];
+        const ghost = compareToHistory(st.history, g.id, 0, now()); // 7-day average of your free runs
         const tier = gameTier(st, g);
         return h('a', { class: 'card card-accent game-card', 'data-cat': cat, href: `#/play/${g.id}` },
           h('div', { class: 'row between' }, h('h3', null, g.name), h('span', { class: 'chip' }, tier.name)),
           h('p', { class: 'muted' }, g.blurb),
           h('div', { class: 'row between small' },
             h('span', null, `Best: ${best ? formatInt(best.score) : '–'}`),
-            h('span', { class: 'muted' }, g.skills.map((s) => SKILLS[s].label).join(', '))),
+            h('span', { class: 'ghost' }, ghost.avg7 == null ? 'No runs this week' : `7-day avg: ${formatInt(ghost.avg7)}`)),
+          h('div', { class: 'muted small' }, g.skills.map((s) => SKILLS[s].label).join(', ')),
         );
       })),
     );
