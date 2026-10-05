@@ -2,10 +2,14 @@
 import { DEBUG } from '../config.js';
 import dummy from './dummy/index.js';
 import quickmath from './quickmath/index.js';
+import ballpark from './ballpark/index.js';
+import sure from './sure/index.js';
 
 export const games = [
   // real games are listed here (one line each)
   quickmath,
+  ballpark,
+  sure,
   ...(DEBUG ? [dummy] : []),
 ];
 

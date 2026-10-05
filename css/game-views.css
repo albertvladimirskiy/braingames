@@ -27,3 +27,30 @@
 .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: auto; }
 .numkey { min-height: 64px; font-size: var(--fs-5); padding: 0; }
 .numkey-submit { font-size: var(--fs-3); }
+
+/* Charts (inline SVG; colors via currentColor so both themes work) */
+.chart { width: 100%; height: auto; color: var(--text); }
+.chart .plot-grid { stroke: var(--border); stroke-width: 1; }
+.chart .plot-row { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 4; }
+.chart .plot-truth { stroke: var(--text); stroke-width: 2; }
+.chart .plot-diagonal { stroke: var(--text-muted); stroke-width: 2; stroke-dasharray: 6 5; }
+.chart .plot-line { fill: none; stroke: var(--accent); stroke-width: 2; }
+.chart .plot-dot { fill: var(--accent); stroke: var(--text); stroke-width: 2; fill-opacity: 0.85; }
+.chart .plot-label { fill: var(--text-muted); font-size: 10px; font-family: var(--font); }
+.answer-list { margin: 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+.calib-table { width: 100%; border-collapse: collapse; font-size: var(--fs-2); }
+.calib-table th, .calib-table td { text-align: left; padding: var(--space-1) var(--space-2); border-bottom: 1px solid var(--border); }
+.strong { font-weight: var(--fw-bold); }
+kbd { font-family: inherit; font-size: var(--fs-1); padding: 0 var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-1); background: var(--surface-3); color: var(--text); }
+
+/* Ballpark */
+.bp-question, .sure-statement { font-size: var(--fs-4); line-height: 1.3; }
+.bp-input { flex: 1; min-width: 0; font-size: var(--fs-5); }
+
+/* How Sure Are You? */
+.sure-readout { text-align: center; font-size: var(--fs-7); }
+.sure-slider { width: 100%; min-height: var(--touch); accent-color: var(--accent); }
+.snap-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-1); }
+.snap-row .btn { padding: var(--space-2) 0; min-width: 0; }
+.snap-row .btn[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.sure-preview { text-align: center; font-weight: var(--fw-bold); white-space: pre-wrap; }

@@ -1,7 +1,7 @@
 /* Service worker: cache-first app shell. The block between the GENERATED markers is
    rewritten by `npm run gen` (scripts/gen-sw.mjs); tests fail if it is stale. */
 /* GENERATED:START */
-const BUILD = '7d0530ef8f';
+const BUILD = '0afaddffbb';
 const PRECACHE = [
   "./",
   "css/base.css",
@@ -9,6 +9,8 @@ const PRECACHE = [
   "css/game-views.css",
   "css/games.css",
   "css/tokens.css",
+  "data/ballpark-bank.js",
+  "data/tf-questions.js",
   "icons/icon-maskable.svg",
   "icons/icon.svg",
   "index.html",
@@ -33,12 +35,20 @@ const PRECACHE = [
   "js/core/srs.js",
   "js/core/storage.js",
   "js/core/ui.js",
+  "js/games/ballpark/index.js",
+  "js/games/ballpark/logic.js",
+  "js/games/ballpark/plot.js",
+  "js/games/ballpark/view.js",
   "js/games/dummy/index.js",
   "js/games/hud.js",
   "js/games/quickmath/index.js",
   "js/games/quickmath/logic.js",
   "js/games/quickmath/view.js",
   "js/games/registry.js",
+  "js/games/sure/chart.js",
+  "js/games/sure/index.js",
+  "js/games/sure/logic.js",
+  "js/games/sure/view.js",
   "js/main.js",
   "js/screens/gameShell.js",
   "js/screens/home.js",
