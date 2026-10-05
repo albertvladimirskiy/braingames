@@ -1,7 +1,7 @@
 /* Service worker: cache-first app shell. The block between the GENERATED markers is
    rewritten by `npm run gen` (scripts/gen-sw.mjs); tests fail if it is stale. */
 /* GENERATED:START */
-const BUILD = '2876e72fd9';
+const BUILD = 'f8dd68fae5';
 const PRECACHE = [
   "./",
   "css/base.css",

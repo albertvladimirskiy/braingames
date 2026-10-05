@@ -1,31 +1,33 @@
 /* Per-game views. */
 .center { text-align: center; }
 
-/* Quick Math */
+/* Quick Math (compact so the numpad fits above the fold on a 360×740 phone) */
+.stage-compact { gap: var(--space-2); }
+.qm-problem-wrap { position: relative; }
+.qm-level { position: absolute; left: 0; top: 0; }
 .qm-problem {
-  font-size: var(--fs-7);
+  font-size: clamp(2.25rem, 7dvh, var(--fs-7));
   font-weight: var(--fw-heavy);
   text-align: center;
   line-height: 1.1;
-  padding: var(--space-4) 0 0;
-  min-height: 2.4em;
+  min-height: 1.7em;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.qm-answer-row { display: flex; align-items: flex-end; gap: var(--space-3); }
 .qm-answer {
-  font-size: var(--fs-6);
+  flex: 1;
+  font-size: clamp(1.75rem, 5.5dvh, var(--fs-6));
   font-weight: var(--fw-bold);
   text-align: center;
-  min-height: 1.4em;
+  min-height: 1.3em;
   border-bottom: var(--border-w) solid var(--accent);
-  margin: 0 auto;
-  min-width: 6ch;
-  max-width: 100%;
+  min-width: 0;
 }
 .qm-answer.empty { color: var(--text-muted); }
 .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: auto; }
-.numkey { min-height: 64px; font-size: var(--fs-5); padding: 0; }
+.numkey { min-height: clamp(52px, 8.2dvh, 64px); font-size: var(--fs-5); padding: 0; }
 .numkey-submit { font-size: var(--fs-3); }
 
 /* Charts (inline SVG; colors via currentColor so both themes work) */

@@ -172,13 +172,13 @@ export function createQuickMath(ctx) {
       answerEl = h('div', { class: 'qm-answer tabular empty', role: 'status', 'aria-label': 'Your answer' }, '?');
       feedbackEl = h('div', { class: 'feedback', role: 'status', 'aria-live': 'polite' }, '');
       const touch = isTouch();
+      el.classList.add('stage-compact');
       el.append(
         flashLayer,
         hud.el,
-        h('div', { class: 'row between' }, levelEl,
+        h('div', { class: 'qm-problem-wrap' }, levelEl, problemEl),
+        h('div', { class: 'qm-answer-row' }, answerEl,
           h('button', { class: 'btn btn-sm', type: 'button', onClick: () => running && answer('skip') }, `Skip (−${SKIP_PENALTY_MS / 1000}s)${touch ? '' : ' · Esc'}`)),
-        problemEl,
-        answerEl,
         feedbackEl,
         touch ? numpad() : h('p', { class: 'muted center small' }, 'Type the answer: it locks in by itself. Enter submits a guess (−3s if wrong), Esc skips, P pauses.'),
       );
