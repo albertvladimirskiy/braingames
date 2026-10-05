@@ -32,7 +32,7 @@ Any static server works (`python -m http.server`, etc.). Useful URL flags:
 ## Test
 
 ```bash
-npm test             # node:test, no dependencies (≈190 tests)
+npm test             # node:test, no dependencies (186 tests)
 npm run check        # syntax-checks every .js/.mjs file
 npm run gen          # regenerate the service-worker precache list/hash and mirror the app name
 npm run smoke        # browser smoke test; needs Playwright, otherwise it skips with instructions

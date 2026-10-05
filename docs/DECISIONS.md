@@ -38,8 +38,9 @@ After writing `data/tf-questions.js` (205 statements), `data/ballpark-bank.js` (
 A tooling-free audit cannot prove correctness; if you spot an error, fix the entry and its test count will still hold.
 
 ## Verification actually performed
-- `npm test` (190 tests) and `npm run check` pass; the service-worker logic (install/activate/offline fetch/stale cache cleanup) is exercised in `tests/sw.test.js` against a fake worker global.
+- `npm test` (186 tests) and `npm run check` pass; the service-worker logic (install/activate/offline fetch/stale cache cleanup) is exercised in `tests/sw.test.js` against a fake worker global.
 - Playwright is not installed here, so `scripts/smoke.mjs` skips. Instead each game, the shell (countdown, pause, auto-pause on hidden tab, results, Again), Daily (all three segments, share text, persistence), Home, Stats and Settings (theme, motion, export → import round trip, invalid import) were driven in a real browser pane with scripted input, with no console errors, no horizontal overflow at 360 px, and no touch target under 48 px except checkbox inputs that sit inside a 48 px+ label.
+- Offline: with `?sw` the worker installed (69 files precached) and, with the dev server stopped, a fresh navigation to `#/stats` still rendered from the cache.
 - Not verified on real hardware: audio output, haptics, installation from the browser menu, iOS Safari.
 
 ## More decisions
