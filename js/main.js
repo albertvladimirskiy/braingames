@@ -12,6 +12,8 @@ import { games } from './games/registry.js';
 import { mountGame } from './screens/gameShell.js';
 import { renderHome } from './screens/home.js';
 import { renderSettings } from './screens/settings.js';
+import { renderDaily } from './screens/daily.js';
+import { renderStats } from './screens/stats.js';
 
 const storage = createStorage();
 const services = { storage, rating, audio, haptics, juice, clock };
@@ -39,8 +41,8 @@ function renderNav(route) {
 const routes = {
   home: (el) => renderHome(el, services),
   play: (el, route) => mountGame(el, { services, gameId: route.id, query: route.query }),
-  daily: (el) => el.append(h('h1', null, 'Daily')),
-  stats: (el) => el.append(h('h1', null, 'Stats')),
+  daily: (el) => renderDaily(el, services),
+  stats: (el) => renderStats(el, services),
   settings: (el) => renderSettings(el, services),
 };
 

@@ -156,3 +156,17 @@ textarea { width: 100%; min-height: 140px; font-family: ui-monospace, Menlo, Con
 .big-num { font-size: var(--fs-7); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; line-height: 1; }
 .delta-up { color: var(--good); }
 .delta-down { color: var(--bad); }
+
+/* Home / stats / daily */
+.cat-title { margin: var(--space-2) 0; }
+.game-card h3 { font-size: var(--fs-4); }
+.rec-card { display: flex; flex-direction: column; gap: 2px; }
+.skill-row { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-2) 0; }
+.skill-bar { position: relative; height: 14px; border-radius: var(--radius-pill); background: var(--surface-3); overflow: hidden; display: flex; }
+.skill-fill { display: block; height: 100%; background: var(--accent); }
+.skill-tick { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--text); opacity: 0.55; }
+.skill-bar .seg { display: block; height: 100%; }
+.seg-mastered { background: var(--good); }
+.seg-learning { background: var(--warn); }
+.share-text { margin: 0; padding: var(--space-4); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-2); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: var(--fs-2); white-space: pre-wrap; }
+body.in-game .nav { display: none; }
