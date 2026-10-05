@@ -1,1 +1,29 @@
-/* Per-game views (numpad, options, stroop buttons, charts). */
+/* Per-game views. */
+.center { text-align: center; }
+
+/* Quick Math */
+.qm-problem {
+  font-size: var(--fs-7);
+  font-weight: var(--fw-heavy);
+  text-align: center;
+  line-height: 1.1;
+  padding: var(--space-4) 0 0;
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qm-answer {
+  font-size: var(--fs-6);
+  font-weight: var(--fw-bold);
+  text-align: center;
+  min-height: 1.4em;
+  border-bottom: var(--border-w) solid var(--accent);
+  margin: 0 auto;
+  min-width: 6ch;
+  max-width: 100%;
+}
+.qm-answer.empty { color: var(--text-muted); }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-top: auto; }
+.numkey { min-height: 64px; font-size: var(--fs-5); padding: 0; }
+.numkey-submit { font-size: var(--fs-3); }

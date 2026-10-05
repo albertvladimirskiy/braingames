@@ -1,7 +1,7 @@
 // Results screen: score, grade, deltas vs last/PB/7-day "ghost", next goal, rating changes, XP, extras, Again.
 import { h } from '../core/ui.js';
 import { SKILLS, PLACEHOLDER_NOTE } from '../config.js';
-import { ratingTier } from '../core/benchmarks.js';
+import { ratingTier, TIERS } from '../core/benchmarks.js';
 import { formatInt, formatSigned } from '../core/format.js';
 
 const GUARD_MS = 450; // ignore Enter/Space right after the round ends (a late answer keystroke must not restart it)
@@ -67,7 +67,7 @@ export function renderResults(root, { game, result, summary, services, practice,
             h('span', { class: `tabular ${diff >= 0 ? 'delta-up' : 'delta-down'}` }, `${formatInt(d.after)} (${formatSigned(diff)})`),
           );
         }),
-        summary.tierChanges.map((c) => h('p', { class: 'tier-change' }, `★ ${SKILLS[c.skill]?.label ?? c.skill}: ${c.from} → ${c.to}`)),
+        summary.tierChanges.map((c) => h('p', { class: 'tier-change' }, `${TIERS.findIndex((t) => t.name === c.to) > TIERS.findIndex((t) => t.name === c.from) ? '▲ Tier up' : '▼ Tier down'}: ${SKILLS[c.skill]?.label ?? c.skill} ${c.from} → ${c.to}`)),
       ),
     );
   }
